@@ -1,26 +1,42 @@
-name: Python CI
+name: Python DevOps Pipeline
 
 on:
   push:
     branches:
       - main
 
-  pull_request:
-    branches:
-      - main
-
 jobs:
-  run-python:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Run Program
+      - name: Build
+        run: python -m py_compile x.py
+
+  run:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run
         run: python x.py
+
+  execute:
+    needs: run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Execute
+        run: echo "Execution completed successfully"
